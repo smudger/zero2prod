@@ -1,8 +1,9 @@
 use std::net::TcpListener;
 
-use actix_web::{dev::Server, middleware::Logger, web, App, HttpServer};
+use actix_web::{dev::Server, web, App, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
+use tracing_actix_web::TracingLogger;
 
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::email_client::EmailClient;
@@ -70,7 +71,7 @@ pub fn run(
     let base_url = web::Data::new(ApplicationBaseUrl(base_url));
     let server = HttpServer::new(move || {
         App::new()
-            .wrap(Logger::default())
+            .wrap(TracingLogger::default())
             .route("/health_check", web::get().to(health_check))
             .route("/subscriptions", web::post().to(subscribe))
             .route("/subscriptions/confirm", web::get().to(confirm))

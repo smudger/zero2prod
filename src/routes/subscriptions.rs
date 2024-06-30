@@ -121,6 +121,10 @@ pub async fn send_confirmation_email(
             ),
         )
         .await
+        .map_err(|e| {
+            tracing::error!("Failed to send confirmation email: {:?}", e);
+            e
+        })
 }
 
 impl TryFrom<FormData> for NewSubscriber {

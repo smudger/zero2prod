@@ -34,6 +34,10 @@ services:
       - key: APP_APPLICATION__BASE_URL
         scope: RUN_TIME
         value: ${APP_URL}
+      - key: APP_EMAIL_CLIENT__AUTHORIZATION_TOKEN
+        scope: RUN_TIME
+        value: EV[1:tIywTa1qe6wunzFIWHw2sNzOJy7YzP7w:78ocXdzA6pcMFtXINSS7+bU5jJtqTFZE8VxiTCU0vd7XXfMfWkhEIMAIqjQlF8QxZ99yXA==]
+        type: SECRET
 databases:
   # PG = Postgres
   - engine: PG

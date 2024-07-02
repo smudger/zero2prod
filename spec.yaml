@@ -38,6 +38,14 @@ services:
         scope: RUN_TIME
         value: EV[1:tIywTa1qe6wunzFIWHw2sNzOJy7YzP7w:78ocXdzA6pcMFtXINSS7+bU5jJtqTFZE8VxiTCU0vd7XXfMfWkhEIMAIqjQlF8QxZ99yXA==]
         type: SECRET
+      - key: APP_APPLICATION__HMAC_SECRET
+        scope: RUN_TIME
+        value: EV[1:kgTSNTYAdv2zppV2ZwZgRfsAuBleP8Gk:5muqoy27TyALDMn/NqmLCXFRCQP1MZBcHqb/ph0m+IOf8vwJcQauJYlDl6Mal3Lyy41L0KwWSkqju2nN74Zy+PjCMglA81nqvoyOf0V0wuqzBTFjnms4WXml2hi32DTMIfEGgpqsRI+VKIrEvnaLKjHdEKWN6Qn9l6HG9r3oUXJ3kN4511xWYf2eTNTb+Fzm+pwjDcmF/5NjOf1pt7cxSZwVBnO03uLX3phrQXr47KB3EusuPGs7o/16shr4X1wuVfZd7HJk9Wm/0HXXjTQjk9Zh88Oc6LCmWU9P+97vkYzZOAZHQal8QgZGTiazZc17BhoWAxtcqHPAu0P0XALMmkuW4VNd0NqjVDQ9Hab0sV0=]
+        type: SECRET
+      - key: APP_REDIS_URI
+        scope: RUN_TIME
+        value: EV[1:0CNz0tpu6aJc8AYUjIDHflRzGqznwtMm:cakWgxfjPhpfcfVFI+nA95aSQrAiRA5X6JIHPkV34DrvRHSPW0XpVhUFuryBovQ/EBue81IptnFGe7AV5pT5t+YWlTCOotawmC1SRTrL9a6nL6kSalsDnDTOhrUWB3kth8gGumqjl94syENnd8Vep5IgjifNyoruflMHxqnwghOIdg==]
+        type: SECRET
 databases:
   # PG = Postgres
   - engine: PG

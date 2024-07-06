@@ -4,18 +4,18 @@ use wiremock::matchers::{any, method, path};
 use wiremock::{Mock, ResponseTemplate};
 
 #[tokio::test]
-async fn you_must_be_logged_in_to_see_the_send_newsletter_form() {
+async fn you_must_be_logged_in_to_see_the_newsletter_form() {
     let app = spawn_app().await;
-    let response = app.get_send_newsletter().await;
+    let response = app.get_publish_newsletter().await;
     assert_is_redirect_to(&response, "/login")
 }
 
 #[tokio::test]
-async fn you_must_be_logged_in_to_send_a_newsletter() {
+async fn you_must_be_logged_in_to_publish_a_newsletter() {
     let app = spawn_app().await;
 
     let response = app
-        .post_send_newsletter(&serde_json::json!({
+        .post_publish_newsletter(&serde_json::json!({
             "title": "Newsletter title",
             "text_content": "Newsletter body as plain text",
             "html_content": "<p>Newsletter body as HTML</p>",
@@ -29,6 +29,7 @@ async fn you_must_be_logged_in_to_send_a_newsletter() {
 async fn sending_a_newsletter_to_a_confirmed_subscriber_works() {
     let app = spawn_app().await;
     create_confirmed_subscriber(&app).await;
+    app.test_user.login(&app).await;
 
     Mock::given(path("/email"))
         .and(method("POST"))
@@ -38,15 +39,7 @@ async fn sending_a_newsletter_to_a_confirmed_subscriber_works() {
         .await;
 
     let response = app
-        .post_login(&serde_json::json!({
-            "username": &app.test_user.username,
-            "password": &app.test_user.password,
-        }))
-        .await;
-    assert_is_redirect_to(&response, "/admin/dashboard");
-
-    let response = app
-        .post_send_newsletter(&serde_json::json!({
+        .post_publish_newsletter(&serde_json::json!({
             "title": "Newsletter title",
             "text_content": "Newsletter body as plain text",
             "html_content": "<p>Newsletter body as HTML</p>",
@@ -54,14 +47,15 @@ async fn sending_a_newsletter_to_a_confirmed_subscriber_works() {
         .await;
     assert_is_redirect_to(&response, "/admin/newsletters");
 
-    let html_page = app.get_send_newsletter_html().await;
-    assert!(html_page.contains("<p><i>Newsletter has been sent.</i></p>"));
+    let html_page = app.get_publish_newsletter_html().await;
+    assert!(html_page.contains("<p><i>The newsletter issue has been published!</i></p>"));
 }
 
 #[tokio::test]
 async fn newsletters_are_not_delivered_to_unconfirmed_subscribers() {
     let app = spawn_app().await;
     create_unconfirmed_subscriber(&app).await;
+    app.test_user.login(&app).await;
 
     Mock::given(any())
         .respond_with(ResponseTemplate::new(200))
@@ -70,15 +64,7 @@ async fn newsletters_are_not_delivered_to_unconfirmed_subscribers() {
         .await;
 
     let response = app
-        .post_login(&serde_json::json!({
-            "username": &app.test_user.username,
-            "password": &app.test_user.password,
-        }))
-        .await;
-    assert_is_redirect_to(&response, "/admin/dashboard");
-
-    let response = app
-        .post_send_newsletter(&serde_json::json!({
+        .post_publish_newsletter(&serde_json::json!({
             "title": "Newsletter title",
             "text_content": "Newsletter body as plain text",
             "html_content": "<p>Newsletter body as HTML</p>",
@@ -86,8 +72,8 @@ async fn newsletters_are_not_delivered_to_unconfirmed_subscribers() {
         .await;
     assert_is_redirect_to(&response, "/admin/newsletters");
 
-    let html_page = app.get_send_newsletter_html().await;
-    assert!(html_page.contains("<p><i>Newsletter has been sent.</i></p>"));
+    let html_page = app.get_publish_newsletter_html().await;
+    assert!(html_page.contains("<p><i>The newsletter issue has been published!</i></p>"));
 }
 
 #[tokio::test]
@@ -127,7 +113,7 @@ async fn newsletters_returns_400_for_invalid_data() {
     assert_is_redirect_to(&response, "/admin/dashboard");
 
     for (invalid_body, error_message) in test_cases {
-        let response = app.post_send_newsletter(&invalid_body).await;
+        let response = app.post_publish_newsletter(&invalid_body).await;
 
         assert_eq!(
             response.status().as_u16(),
